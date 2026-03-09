@@ -1,0 +1,18 @@
+[33m531ad9f[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Fix API URL for production
+[33m71cb394[m Reset to H2 Databse
+[33macce158[m Reset to H2 Database
+[33m35a9c93[m Hardcode PostgreSQL URL
+[33m695d6fb[m Fix PostgreSQL connection
+[33m72c78c1[m Fix datasource URL config
+[33m2559fa0[m Fix DATABASE_URL format
+[33m6e11f4b[m Fix port binding for Render
+[33md2d165b[m Fix PostgreSQL URL format
+[33m941a0d3[m Add PostgreSQL version
+[33md27e8ef[m Add PostgreSQL support
+[33mccbe03a[m Fix Dockerfile with Maven build
+[33mb9bf150[m Fix mvnw permissions in Dockerfile
+[33mdfb6254[m Fix Dockerfile encoding
+[33m7524332[m Add Dockerfile
+[33m427c707[m Create README.md for Taskmaster application
+[33m5956d39[m Add CLI Todo App with SQLite
+[33m3c4ef63[m Initial commit: Full Stack Todo App with Spring Boot API
