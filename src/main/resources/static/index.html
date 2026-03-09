@@ -431,96 +431,15 @@
           const data = JSON.parse(text);
           token = data.token;
           localStorage.setItem('token', token);
-          showTasksPage();
-        } else {
-          msg.textContent = 'registered! please login';
+          msg.textContent = 'Login successful! Welcome ' + username + ' 👋';
           msg.className = 'auth-message success';
-          switchTab('login');
+          setTimeout(() => showTasksPage(), 1000);
+        } else {
+          msg.textContent = text || 'Account created! Please login 🎉';
+          msg.className = 'auth-message success';
+          setTimeout(() => switchTab('login'), 1500);
         }
       } catch (e) {
         msg.textContent = 'error: ' + e.message;
         msg.className = 'auth-message error';
       }
-    }
-
-    function showTasksPage() {
-      document.getElementById('auth-page').style.display = 'none';
-      document.getElementById('tasks-page').style.display = 'block';
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      document.getElementById('username-badge').textContent = '@' + payload.sub;
-      loadTasks();
-    }
-
-    function logout() {
-      localStorage.removeItem('token');
-      token = null;
-      document.getElementById('auth-page').style.display = 'flex';
-      document.getElementById('tasks-page').style.display = 'none';
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-    }
-
-    async function loadTasks() {
-      try {
-        const res = await fetch(`${API}/tasks`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const tasks = await res.json();
-        renderTasks(tasks);
-      } catch(e) {
-        console.error('loadTasks error:', e);
-      }
-    }
-
-    function renderTasks(tasks) {
-      const list = document.getElementById('task-list');
-      if (tasks.length === 0) {
-        list.innerHTML = '<div class="empty-state">no tasks yet. add one above! ✨</div>';
-        return;
-      }
-      list.innerHTML = tasks.map(t => `
-        <div class="task-item" id="task-${t.id}">
-          <div class="task-check ${t.completed ? 'done' : ''}" onclick="toggleTask(${t.id}, ${t.completed})"></div>
-          <div class="task-title ${t.completed ? 'done' : ''}">${t.title}</div>
-          <button class="delete-btn" onclick="deleteTask(${t.id})">✕</button>
-        </div>
-      `).join('');
-    }
-
-    async function addTask() {
-      const input = document.getElementById('new-task');
-      const title = input.value.trim();
-      if (!title) return;
-      input.value = '';
-      await fetch(`${API}/tasks`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ title })
-      });
-      loadTasks();
-    }
-
-    async function toggleTask(id, completed) {
-      await fetch(`${API}/tasks/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ completed: !completed })
-      });
-      loadTasks();
-    }
-
-    async function deleteTask(id) {
-      const el = document.getElementById(`task-${id}`);
-      el.style.opacity = '0';
-      el.style.transform = 'translateX(20px)';
-      setTimeout(async () => {
-        await fetch(`${API}/tasks/${id}`, {
-          method: 'DELETE',
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        loadTasks();
-      }, 300);
-    }
-  </script>
-</body>
-</html>
