@@ -3,236 +3,515 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Todo App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <title>TaskMaster</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #0d0d0d;
-      --surface: #161616;
-      --border: #2a2a2a;
-      --accent: #c8f135;
-      --text: #f0f0f0;
-      --muted: #555;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: var(--bg);
-      color: var(--text);
+      background: #0a0a0f;
+      color: #fff;
       font-family: 'DM Mono', monospace;
       min-height: 100vh;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: center;
-      padding: 60px 20px;
+      overflow: hidden;
     }
 
-    .container { width: 100%; max-width: 560px; }
-
-    header { margin-bottom: 40px; }
-
-    .tag {
-      font-size: 11px;
-      letter-spacing: 4px;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 6px;
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #7f5af010 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation: drift1 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+    body::after {
+      content: '';
+      position: fixed;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #2cb67d10 0%, transparent 70%);
+      bottom: -50px; right: -50px;
+      animation: drift2 10s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes drift1 {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(60px, 40px); }
+    }
+    @keyframes drift2 {
+      0%, 100% { transform: translate(0,0); }
+      50% { transform: translate(-40px, -60px); }
     }
 
-    h1 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 90px;
-      line-height: 0.9;
-      color: var(--text);
+    /* AUTH PAGE */
+    #auth-page {
+      width: 100%;
+      max-width: 420px;
+      padding: 20px;
+      animation: fadeIn 0.6s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    h1 span { color: var(--accent); }
-
-    .stats {
-      margin-top: 12px;
-      font-size: 12px;
-      color: var(--muted);
+    .auth-box {
+      background: #16161e;
+      border: 1px solid #2a2a3a;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
     }
 
-    .stats b { color: var(--accent); }
+    .auth-logo {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2.5rem;
+      background: linear-gradient(135deg, #7f5af0, #2cb67d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: 2px;
+    }
 
-    .input-row {
-      display: flex;
-      gap: 10px;
+    .auth-subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.8rem;
       margin-bottom: 32px;
     }
 
-    input[type="text"] {
+    .tab-switcher {
+      display: flex;
+      background: #0a0a0f;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 28px;
+    }
+
+    .tab-btn {
       flex: 1;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: 'DM Mono', monospace;
-      font-size: 14px;
-      padding: 14px 18px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    input[type="text"]:focus { border-color: var(--accent); }
-
-    .add-btn {
-      background: var(--accent);
-      color: #0d0d0d;
+      padding: 10px;
       border: none;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 18px;
-      padding: 14px 22px;
+      background: transparent;
+      color: #666;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.85rem;
       cursor: pointer;
-      transition: background 0.2s;
+      border-radius: 8px;
+      transition: all 0.3s ease;
     }
 
-    .add-btn:hover { background: #d9ff4d; }
+    .tab-btn.active {
+      background: #7f5af0;
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(127,90,240,0.4);
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 14px 16px;
+      background: #0a0a0f;
+      border: 1px solid #2a2a3a;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+      border-color: #7f5af0;
+      box-shadow: 0 0 0 3px rgba(127,90,240,0.15);
+    }
+
+    .input-group input::placeholder { color: #444; }
+
+    .auth-btn {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #7f5af0, #2cb67d);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .auth-btn:hover::before { left: 100%; }
+    .auth-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(127,90,240,0.4); }
+    .auth-btn:active { transform: translateY(0); }
+
+    .auth-message {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 0.82rem;
+      min-height: 20px;
+      transition: all 0.3s ease;
+    }
+    .auth-message.error { color: #ff6b6b; }
+    .auth-message.success { color: #2cb67d; }
+
+    /* TASKS PAGE */
+    #tasks-page {
+      display: none;
+      width: 100%;
+      max-width: 600px;
+      padding: 20px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    .tasks-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+    }
+
+    .tasks-title {
+      font-family: 'Bebas Neue', cursive;
+      font-size: 2rem;
+      background: linear-gradient(135deg, #7f5af0, #2cb67d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .username-badge {
+      background: #16161e;
+      border: 1px solid #2a2a3a;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: #7f5af0;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid #ff6b6b44;
+      color: #ff6b6b;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .logout-btn:hover { background: #ff6b6b22; }
+
+    .add-task-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .add-task-box input {
+      flex: 1;
+      padding: 14px 18px;
+      background: #16161e;
+      border: 1px solid #2a2a3a;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .add-task-box input:focus {
+      border-color: #7f5af0;
+      box-shadow: 0 0 0 3px rgba(127,90,240,0.15);
+    }
+
+    .add-task-box button {
+      padding: 14px 22px;
+      background: linear-gradient(135deg, #7f5af0, #2cb67d);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'DM Mono', monospace;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .add-task-box button:hover { transform: scale(1.05); }
+
+    .task-list { display: flex; flex-direction: column; gap: 10px; }
 
     .task-item {
+      background: #16161e;
+      border: 1px solid #2a2a3a;
+      border-radius: 12px;
+      padding: 16px 18px;
       display: flex;
       align-items: center;
       gap: 14px;
-      padding: 16px 18px;
-      border: 1px solid var(--border);
-      margin-bottom: 8px;
-      background: var(--surface);
-      transition: border-color 0.2s;
+      animation: slideIn 0.3s ease;
+      transition: all 0.3s ease;
     }
 
-    .task-item:hover { border-color: #3a3a3a; }
-    .task-item.done { opacity: 0.45; }
-    .task-item.done .task-text { text-decoration: line-through; color: var(--muted); }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
 
-    .check {
-      width: 20px; height: 20px;
-      border: 2px solid var(--border);
+    .task-item:hover { border-color: #7f5af044; transform: translateX(4px); }
+
+    .task-check {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      border: 2px solid #2a2a3a;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s ease;
       flex-shrink: 0;
-      transition: all 0.2s;
     }
 
-    .check:hover { border-color: var(--accent); }
-    .task-item.done .check { background: var(--accent); border-color: var(--accent); }
-    .check-icon { display: none; color: #0d0d0d; font-size: 12px; font-weight: bold; }
-    .task-item.done .check-icon { display: block; }
+    .task-check.done {
+      background: linear-gradient(135deg, #7f5af0, #2cb67d);
+      border-color: transparent;
+    }
 
-    .task-text { flex: 1; font-size: 14px; }
+    .task-check.done::after { content: '✓'; font-size: 0.75rem; color: white; }
+
+    .task-title {
+      flex: 1;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
+    .task-title.done {
+      text-decoration: line-through;
+      color: #444;
+    }
 
     .delete-btn {
       background: transparent;
       border: none;
-      color: var(--muted);
-      font-size: 18px;
+      color: #ff6b6b44;
+      font-size: 1.1rem;
       cursor: pointer;
-      transition: color 0.2s;
+      transition: all 0.3s ease;
+      padding: 4px 8px;
+      border-radius: 6px;
     }
+    .delete-btn:hover { color: #ff6b6b; background: #ff6b6b11; }
 
-    .delete-btn:hover { color: #ff5555; }
-
-    .empty {
+    .empty-state {
       text-align: center;
-      padding: 60px 0;
-      color: var(--muted);
-      font-size: 13px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      color: #333;
+      padding: 40px;
+      font-size: 0.85rem;
     }
   </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <div class="tag">// powered by spring boot api</div>
-    <h1>TASK<span>S.</span></h1>
-    <div class="stats">
-      <b id="done-count">0</b> done &nbsp;·&nbsp; <b id="left-count">0</b> remaining
-    </div>
-  </header>
 
-  <div class="input-row">
-    <input type="text" id="task-input" placeholder="add a new task..." />
-    <button class="add-btn" onclick="addTask()">ADD</button>
+  <!-- AUTH PAGE -->
+  <div id="auth-page">
+    <div class="auth-box">
+      <div class="auth-logo">TaskMaster</div>
+      <div class="auth-subtitle">your tasks. your space.</div>
+
+      <div class="tab-switcher">
+        <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+        <button class="tab-btn" onclick="switchTab('register')">Register</button>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="username" placeholder="username" />
+      </div>
+      <div class="input-group">
+        <input type="password" id="password" placeholder="password" />
+      </div>
+
+      <button class="auth-btn" onclick="handleAuth()" id="auth-btn">Login</button>
+      <div class="auth-message" id="auth-message"></div>
+    </div>
   </div>
 
-  <div id="task-list"></div>
-</div>
+  <!-- TASKS PAGE -->
+  <div id="tasks-page">
+    <div class="tasks-header">
+      <div class="tasks-title">TaskMaster</div>
+      <div class="user-info">
+        <div class="username-badge" id="username-badge">@user</div>
+        <button class="logout-btn" onclick="logout()">logout</button>
+      </div>
+    </div>
 
-<script>
-  const API = 'https://taskmaster-k8g1.onrender.com/tasks';
+    <div class="add-task-box">
+      <input type="text" id="new-task" placeholder="add a new task..." onkeydown="if(event.key==='Enter') addTask()" />
+      <button onclick="addTask()">+</button>
+    </div>
 
+    <div class="task-list" id="task-list"></div>
+  </div>
 
-  // ── Load all tasks from API ──────────────────────────────────
-  async function loadTasks() {
-    const res = await fetch(API);
-    const tasks = await res.json();
-    renderTasks(tasks);
-  }
+  <script>
+   const API = 'https://taskmaster-k8g1.onrender.com';
+    let token = localStorage.getItem('token');
+    let currentTab = 'login';
 
-  // ── Render tasks to screen ───────────────────────────────────
-  function renderTasks(tasks) {
-    const list = document.getElementById('task-list');
-    const done = tasks.filter(t => t.completed).length;
-    document.getElementById('done-count').textContent = done;
-    document.getElementById('left-count').textContent = tasks.length - done;
+    if (token) showTasksPage();
 
-    if (tasks.length === 0) {
-      list.innerHTML = '<div class="empty">✦ no tasks yet — add one above</div>';
-      return;
+    function switchTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('.tab-btn').forEach((b, i) => {
+        b.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+      });
+      document.getElementById('auth-btn').textContent = tab === 'login' ? 'Login' : 'Register';
+      document.getElementById('auth-message').textContent = '';
     }
 
-    list.innerHTML = tasks.map(t => `
-      <div class="task-item ${t.completed ? 'done' : ''}">
-        <div class="check" onclick="toggleTask(${t.id}, ${t.completed})">
-          <span class="check-icon">✓</span>
+    async function handleAuth() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const msg = document.getElementById('auth-message');
+
+      if (!username || !password) {
+        msg.textContent = 'please fill all fields';
+        msg.className = 'auth-message error';
+        return;
+      }
+
+      const url = currentTab === 'login' ? `${API}/auth/login` : `${API}/auth/register`;
+
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json().catch(() => res.text());
+
+        if (!res.ok) {
+          msg.textContent = typeof data === 'string' ? data : 'something went wrong';
+          msg.className = 'auth-message error';
+          return;
+        }
+
+        if (currentTab === 'login') {
+          token = data.token;
+          localStorage.setItem('token', token);
+          showTasksPage();
+        } else {
+          msg.textContent = 'registered! please login';
+          msg.className = 'auth-message success';
+          switchTab('login');
+        }
+      } catch (e) {
+        msg.textContent = 'cannot connect to server';
+        msg.className = 'auth-message error';
+      }
+    }
+
+    function showTasksPage() {
+      document.getElementById('auth-page').style.display = 'none';
+      document.getElementById('tasks-page').style.display = 'block';
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      document.getElementById('username-badge').textContent = '@' + payload.sub;
+      loadTasks();
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      token = null;
+      document.getElementById('auth-page').style.display = 'flex';
+      document.getElementById('tasks-page').style.display = 'none';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    async function loadTasks() {
+      const res = await fetch(`${API}/tasks`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const tasks = await res.json();
+      renderTasks(tasks);
+    }
+
+    function renderTasks(tasks) {
+      const list = document.getElementById('task-list');
+      if (tasks.length === 0) {
+        list.innerHTML = '<div class="empty-state">no tasks yet. add one above! ✨</div>';
+        return;
+      }
+      list.innerHTML = tasks.map(t => `
+        <div class="task-item" id="task-${t.id}">
+          <div class="task-check ${t.completed ? 'done' : ''}" onclick="toggleTask(${t.id}, ${t.completed})"></div>
+          <div class="task-title ${t.completed ? 'done' : ''}">${t.title}</div>
+          <button class="delete-btn" onclick="deleteTask(${t.id})">✕</button>
         </div>
-        <span class="task-text">${t.name}</span>
-        <button class="delete-btn" onclick="deleteTask(${t.id})">×</button>
-      </div>
-    `).join('');
-  }
+      `).join('');
+    }
 
-  // ── Add a task ───────────────────────────────────────────────
-  async function addTask() {
-    const input = document.getElementById('task-input');
-    const name = input.value.trim();
-    if (!name) return;
+    async function addTask() {
+      const input = document.getElementById('new-task');
+      const title = input.value.trim();
+      if (!title) return;
+      input.value = '';
+      await fetch(`${API}/tasks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title })
+      });
+      loadTasks();
+    }
 
-    await fetch(API, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, completed: false })
-    });
+    async function toggleTask(id, completed) {
+      await fetch(`${API}/tasks/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ completed: !completed })
+      });
+      loadTasks();
+    }
 
-    input.value = '';
-    loadTasks();
-  }
-
-  // ── Toggle complete ──────────────────────────────────────────
-  async function toggleTask(id, completed) {
-    await fetch(`${API}/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed: !completed })
-    });
-    loadTasks();
-  }
-
-  // ── Delete a task ────────────────────────────────────────────
-  async function deleteTask(id) {
-    await fetch(`${API}/${id}`, { method: 'DELETE' });
-    loadTasks();
-  }
-
-  // ── Enter key to add task ────────────────────────────────────
-  document.getElementById('task-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') addTask();
-  });
-
-  // ── Load tasks on page open ──────────────────────────────────
-  loadTasks();
-</script>
+    async function deleteTask(id) {
+      const el = document.getElementById(`task-${id}`);
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(20px)';
+      setTimeout(async () => {
+        await fetch(`${API}/tasks/${id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        loadTasks();
+      }, 300);
+    }
+  </script>
 </body>
 </html>

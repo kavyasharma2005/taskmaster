@@ -1,6 +1,7 @@
-package com.todo.todoapp;  
+package com.todo.todoapp;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -11,40 +12,31 @@ public class TaskController {
     @Autowired
     private TaskRepository taskRepository;
 
-    // ── GET all tasks ──────────────────────────────────────────
+    private String getUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
     @GetMapping
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
+    public List<Task> getTasks() {
+        return taskRepository.findByUsername(getUsername());
     }
 
-    // ── GET one task by id ─────────────────────────────────────
-    @GetMapping("/{id}")
-    public Task getTask(@PathVariable int id) {
-        return taskRepository.findById(id).orElse(null);
-    }
-
-    // ── POST add a task ────────────────────────────────────────
     @PostMapping
     public Task addTask(@RequestBody Task task) {
+        task.setUsername(getUsername());
         return taskRepository.save(task);
     }
 
-    // ── PUT update a task ──────────────────────────────────────
     @PutMapping("/{id}")
     public Task updateTask(@PathVariable int id, @RequestBody Task updated) {
-        Task task = taskRepository.findById(id).orElse(null);
-        if (task != null) {
-            task.setName(updated.getName());
-            task.setCompleted(updated.isCompleted());
-            return taskRepository.save(task);
-        }
-        return null;
+        Task task = taskRepository.findById(id).orElseThrow();
+        task.setTitle(updated.getTitle());
+        task.setCompleted(updated.isCompleted());
+        return taskRepository.save(task);
     }
 
-    // ── DELETE a task ──────────────────────────────────────────
     @DeleteMapping("/{id}")
-    public String deleteTask(@PathVariable int id) {
+    public void deleteTask(@PathVariable int id) {
         taskRepository.deleteById(id);
-        return "Task " + id + " deleted!";
     }
 }
