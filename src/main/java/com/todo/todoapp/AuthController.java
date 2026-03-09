@@ -20,23 +20,27 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    record AuthRequest(String username, String password) {}
+
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+    public ResponseEntity<?> register(@RequestBody AuthRequest req) {
+        if (userRepository.findByUsername(req.username()).isPresent()) {
             return ResponseEntity.badRequest().body("Username already exists");
         }
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = new User();
+        user.setUsername(req.username());
+        user.setPassword(passwordEncoder.encode(req.password()));
         userRepository.save(user);
         return ResponseEntity.ok("User registered successfully");
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User user) {
-        Optional<User> found = userRepository.findByUsername(user.getUsername());
-        if (found.isEmpty() || !passwordEncoder.matches(user.getPassword(), found.get().getPassword())) {
+    public ResponseEntity<?> login(@RequestBody AuthRequest req) {
+        Optional<User> found = userRepository.findByUsername(req.username());
+        if (found.isEmpty() || !passwordEncoder.matches(req.password(), found.get().getPassword())) {
             return ResponseEntity.badRequest().body("Invalid credentials");
         }
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtUtil.generateToken(req.username());
         return ResponseEntity.ok(Map.of("token", token));
     }
 }
