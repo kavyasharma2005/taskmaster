@@ -1,41 +1,52 @@
-# 🎯 Taskmaster
+# TaskMaster 🚀
 
-A full-stack Todo application built from scratch with Java and Spring Boot.
+A full-stack task management web app with user authentication.
 
-## 🚀 Tech Stack
-- Java 17
-- Spring Boot 4.0
-- H2 Database
-- Spring Data JPA
-- HTML/CSS/JavaScript
-- Maven
+🌐 **Live:** https://taskmaster-k8g1.onrender.com
 
-## ✨ Features
-- Add, delete, edit tasks
-- Mark tasks complete/incomplete
-- REST API with full CRUD
-- Clean responsive UI
-- CLI version with SQLite
+---
 
-## 📁 Project Structure
-- `src/` → Spring Boot REST API + HTML frontend
-- `cli-app/` → Java CLI version with SQLite database
+## Features
+- 🔐 User registration & login (JWT authentication)
+- ✅ Add, complete, and delete tasks
+- 👤 Private tasks per user
+- 💾 Persistent PostgreSQL database
+- 🎨 Beautiful animated dark UI
 
-## 📡 API Endpoints
+---
+
+## Tech Stack
+| Layer | Technology |
+|-------|-----------|
+| Backend | Java 17, Spring Boot 4 |
+| Security | Spring Security + JWT |
+| Database | PostgreSQL (Render) |
+| Frontend | HTML, CSS, JavaScript |
+| Deployment | Docker + Render |
+
+---
+
+## API Endpoints
 | Method | Endpoint | Description |
 |--------|----------|-------------|
+| POST | /auth/register | Register new user |
+| POST | /auth/login | Login & get JWT token |
 | GET | /tasks | Get all tasks |
-| POST | /tasks | Add a task |
+| POST | /tasks | Create a task |
 | PUT | /tasks/{id} | Update a task |
 | DELETE | /tasks/{id} | Delete a task |
 
-## 🛠️ How to Run
-```bash
-git clone https://github.com/kavyasharma2005/taskmaster.git
-cd taskmaster
-.\mvnw.cmd spring-boot:run
-```
-Open `http://localhost:8080` 🎉
+---
 
-## 👩‍💻 Author
-**Kavya Sharma** — [@kavyasharma2005](https://github.com/kavyasharma2005)
+## Run Locally
+```bash
+git clone https://github.com/kavyasharma2005/taskmaster
+cd taskmaster/todoapp
+./mvnw spring-boot:run
+```
+Open http://localhost:8080
+
+---
+
+Made with ❤️ by Kavya Sharma
+```
